@@ -1,7 +1,8 @@
 package com.example.websecurity.security;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +20,9 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@Slf4j
 public class SecurityConfiguration {
+
+    private static final Logger log = LogManager.getLogger(SecurityConfiguration.class);
 
     private final JwtAuthenticationFilter jwtAuthFilter;
 
@@ -40,35 +42,35 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(cors -> {
-                })
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+                .cors().and()
+                .csrf().disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
 
-                .authorizeHttpRequests(auth -> auth
+                .authorizeRequests()
+                .antMatchers(
+                        "/auth/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/actuator/health",
+                        "/error",
+                        "test.txt",
+                        "/webjars/**",
+                        "/actuator/**"
+                ).permitAll()
+                .anyRequest().authenticated()
+                .and()
 
-                        .requestMatchers(
-                                "/auth/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/actuator/health",
-                                "/error",
-                                "test.txt",
-                                "/webjars/**",
-                                "/actuator/**"
+                .headers().frameOptions().disable()
+                .and()
 
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
-
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {

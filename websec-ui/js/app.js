@@ -1,96 +1,31 @@
-function getToken() {
-    const token = localStorage.getItem("token");
-    if (!token) {
-        window.location.href = "login.html";
-        return null;
-    }
-    return token;
-}
-
-function logout() {
-    localStorage.removeItem("token");
+if (!getToken()) {
     window.location.href = "login.html";
 }
 
 async function getMovie() {
-    const token = getToken();
-    if (!token) return;
 
-    const movieId = document.getElementById("movieIdInput").value;
+    const id = movieId.value;
 
-    if (!movieId) {
-        alert("Please enter a movie ID");
+    const response = await fetch(`${API_URL}/movie/${id}`, {
+        headers: authHeader()
+    });
+
+    if (handle401(response)) return;
+
+    if (!response.ok) {
+        alert("Movie not found");
         return;
     }
 
-    try {
-        const response = await fetch(
-            `${API_URL}/movie/${movieId}`,
-            {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
+    const movie = await response.json();
 
-        if (!response.ok) {
-            alert("Movie not found");
-            return;
-        }
+    movieCard.style.display = "block";
 
-        const movie = await response.json();
-
-        document.getElementById("movieCard").innerHTML = `
-            <h3>${movie.title}</h3>
-            <p><strong>Director:</strong> ${movie.director}</p>
-            <p><strong>Year:</strong> ${movie.year}</p>
-            <p>${movie.description}</p>
-        `;
-    } catch (error) {
-        console.error("Movie fetch failed:", error);
-    }
+    movieCard.innerHTML = `
+        <h3>${movie.title}</h3>
+        <p><b>Director:</b> ${movie.director}</p>
+        <p><b>Year:</b> ${movie.year}</p>
+        <p><b>Running time:</b> ${movie.runningTime} min</p>
+        <p>${movie.description}</p>
+    `;
 }
-
-async function loadReviews() {
-    const token = getToken();
-    if (!token) return;
-
-    try {
-        const response = await fetch(
-            `${API_URL}/user/reviews`, // ✅ FIXED
-            {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
-            }
-        );
-
-        if (!response.ok) return;
-
-        const reviews = await response.json();
-        const container = document.getElementById("reviewsList");
-        container.innerHTML = "";
-
-        reviews.forEach(review => {
-            const div = document.createElement("div");
-            div.className = "review-item";
-            div.innerHTML = `
-                <strong>${review.movieTitle}</strong>
-                <span> ⭐ ${review.rating}</span>
-            `;
-
-            div.onclick = () => {
-                // ✅ userId removed
-                window.location.href =
-                    `review.html?reviewId=${review.id}`;
-            };
-
-            container.appendChild(div);
-        });
-
-    } catch (error) {
-        console.error("Failed to load reviews:", error);
-    }
-}
-
-document.addEventListener("DOMContentLoaded", loadReviews);

@@ -4,15 +4,18 @@ import com.example.websecurity.exception.WebSecMissingDataException;
 import com.example.websecurity.persistence.User;
 import com.example.websecurity.persistence.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import static lombok.AccessLevel.PACKAGE;
 
 @Service
 @AllArgsConstructor(access = PACKAGE)
-@Slf4j
 public class UserService {
+
+    private static final Logger log = LogManager.getLogger(UserService.class);
+
     private final UserRepository userRepository;
 
     public User getUserByEmail(String email) {

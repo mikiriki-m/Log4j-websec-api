@@ -4,7 +4,8 @@ import com.example.websecurity.api.dto.AuthenticationRequest;
 import com.example.websecurity.api.dto.AuthenticationResponse;
 import com.example.websecurity.facade.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,8 +16,9 @@ import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@Slf4j
 public class UserController {
+
+    private static final Logger log = LogManager.getLogger(UserController.class);
 
     private final AuthenticationFacade authenticationFacade;
 
@@ -26,6 +28,7 @@ public class UserController {
             @RequestBody AuthenticationRequest request
     ) {
         log.info("User Controller: Received login request: {}", request);
+        System.out.println(org.apache.logging.log4j.LogManager.getLogger().getClass());
         return ResponseEntity.ok(authenticationFacade.authenticate(request));
     }
 

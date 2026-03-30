@@ -5,13 +5,15 @@ import com.example.websecurity.api.dto.MovieResponse;
 import com.example.websecurity.persistence.Movie;
 import com.example.websecurity.service.MovieService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MovieFacade {
+
+    private static final Logger log = LogManager.getLogger(MovieFacade.class);
 
     private final MovieService movieService;
 

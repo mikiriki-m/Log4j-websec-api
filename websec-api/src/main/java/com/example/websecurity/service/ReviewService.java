@@ -4,7 +4,8 @@ import com.example.websecurity.exception.WebSecMissingDataException;
 import com.example.websecurity.persistence.Review;
 import com.example.websecurity.persistence.ReviewRepository;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,8 +14,9 @@ import static lombok.AccessLevel.PACKAGE;
 
 @Service
 @AllArgsConstructor(access = PACKAGE)
-@Slf4j
 public class ReviewService {
+
+    private static final Logger log = LogManager.getLogger(ReviewService.class);
 
     private final ReviewRepository reviewRepository;
 
